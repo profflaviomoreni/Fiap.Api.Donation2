@@ -43,16 +43,23 @@ namespace Fiap.Api.Donation2.Controllers
             return "Categoria removida com sucesso";
         }
 
-
-        public int Post(CategoriaModel categoriaModel)
+        [HttpPost]
+        public int Post([FromBody] CategoriaModel categoriaModel)
         {
             return 1231321;
         }
 
 
-        public void Put(int id, CategoriaModel categoriaModel)
+        [HttpPut("{id:int}")]
+        public bool Put([FromBody] CategoriaModel categoriaModel , [FromRoute] int id)
         {
-
+            if ( id == categoriaModel.CategoriaId )
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
         }
 
 

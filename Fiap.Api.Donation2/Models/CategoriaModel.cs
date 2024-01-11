@@ -3,9 +3,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Fiap.Api.Donation2.Models
 {
+    [Table("Categoria")]
     public class CategoriaModel
     {
 
+        [Key]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int CategoriaId { get; set; }
 
 
@@ -22,5 +25,23 @@ namespace Fiap.Api.Donation2.Models
         public string? Token { get; set; }
 
 
+        public CategoriaModel()
+        {
+        }
+
+        public CategoriaModel(int categoriaId, string nome, string? descricao)
+        {
+            CategoriaId = categoriaId;
+            Nome = nome;
+            Descricao = descricao;
+        }
+
+        public CategoriaModel(int categoriaId, string nome, string? descricao, string? token)
+        {
+            CategoriaId = categoriaId;
+            Nome = nome;
+            Descricao = descricao;
+            Token = token;
+        }
     }
 }
