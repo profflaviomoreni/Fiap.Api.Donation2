@@ -1,4 +1,5 @@
 ﻿using Fiap.Api.Donation2.Models;
+using Fiap.Api.Donation2.Repository.Interface;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,44 +10,41 @@ namespace Fiap.Api.Donation2.Controllers
     public class CategoriaController : ControllerBase
     {
 
+        private readonly ICategoriaRepository _categoriaRepository;
+
+        public CategoriaController(ICategoriaRepository categoriaRepository)
+        {
+            _categoriaRepository = categoriaRepository;      
+        }
+
+
         [HttpGet]
         public List<CategoriaModel> Get()
         {
-            return new List<CategoriaModel>()
-            {
-                new CategoriaModel()
-                {
-                    CategoriaId = 1,
-                    Nome = "Celular"
-                },
-                new CategoriaModel() {
-                    CategoriaId = 2,
-                    Nome = "Televisor"
-                }
-            };
+            return (List<CategoriaModel>) _categoriaRepository.FindAll();
         }
 
 
         [HttpGet("{id:int}")]
         public CategoriaModel Get([FromRoute] int id)
         {
-            return new CategoriaModel()
-            {
-                CategoriaId = 1,
-                Nome = "Celular"
-            };
+            var categoria = _categoriaRepository.FindById(id);
+            return categoria;
         }
 
         [HttpDelete("{id:int}")]
         public string Delete([FromRoute] int id)
         {
+            _categoriaRepository.Delete(id);
+
             return "Categoria removida com sucesso";
         }
 
         [HttpPost]
         public int Post([FromBody] CategoriaModel categoriaModel)
         {
-            return 1231321;
+            _categoriaRepository.Insert(categoriaModel);
+            return categoriaModel.CategoriaId;
         }
 
 
@@ -55,6 +53,8 @@ namespace Fiap.Api.Donation2.Controllers
         {
             if ( id == categoriaModel.CategoriaId )
             {
+                _categoriaRepository.Update(categoriaModel);
+
                 return true;
             } else
             {
