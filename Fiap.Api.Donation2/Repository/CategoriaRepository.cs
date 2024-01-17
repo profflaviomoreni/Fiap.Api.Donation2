@@ -1,6 +1,7 @@
 ﻿using Fiap.Api.Donation2.Data;
 using Fiap.Api.Donation2.Models;
 using Fiap.Api.Donation2.Repository.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiap.Api.Donation2.Repository
 {
@@ -24,12 +25,12 @@ namespace Fiap.Api.Donation2.Repository
 
         public IList<CategoriaModel> FindAll()
         {
-            return _dataContext.Categorias.ToList();
+            return _dataContext.Categorias.AsNoTracking().ToList();
         }
 
         public CategoriaModel FindById(int id)
         {
-            return _dataContext.Categorias.FirstOrDefault(c => c.CategoriaId == id);
+            return _dataContext.Categorias.AsNoTracking().FirstOrDefault(c => c.CategoriaId == id);
         }
 
         public int Insert(CategoriaModel categoriaModel)

@@ -68,7 +68,7 @@ namespace Fiap.Api.Donation2.Controllers
                 }
                 else
                 {
-                    produtoRepository.Update(produtoConsulta);
+                    produtoRepository.Update(produtoModel);
                     return NoContent();
                 }
             }

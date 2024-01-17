@@ -16,7 +16,7 @@ namespace Fiap.Api.Donation2.Repository
 
         public  IList<ProdutoModel> FindAll()
         {
-            var produtos = dataContext.Produtos.ToList();
+            var produtos = dataContext.Produtos.AsNoTracking().ToList();
 
             return produtos == null ? new List<ProdutoModel>() : produtos;
         }
@@ -26,6 +26,7 @@ namespace Fiap.Api.Donation2.Repository
         {
             var produtos = dataContext
                                 .Produtos // SELECT * FROM Produtos
+                                .AsNoTracking()
                                 .Include(p => p.Categoria) // INNER JOIN
                                 .Where(p => p.Nome.ToLower().Contains(nome.ToLower()))
                                     .ToList();
@@ -35,7 +36,10 @@ namespace Fiap.Api.Donation2.Repository
 
         public  ProdutoModel FindById(int id)
         {
-            var produto = dataContext.Produtos.FirstOrDefault(p => p.ProdutoId == id);
+            var produto = dataContext
+                                .Produtos
+                                .AsNoTracking()
+                                .FirstOrDefault(p => p.ProdutoId == id);
 
             return produto;
         }

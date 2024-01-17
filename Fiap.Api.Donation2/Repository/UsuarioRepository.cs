@@ -1,6 +1,7 @@
 ﻿using Fiap.Api.Donation2.Data;
 using Fiap.Api.Donation2.Models;
 using Fiap.Api.Donation2.Repository.Interface;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiap.Api.Donation2.Repository
 {
@@ -17,12 +18,12 @@ namespace Fiap.Api.Donation2.Repository
 
         public IList<UsuarioModel> FindAll()
         {
-            return _dataContext.Usuarios.ToList();
+            return _dataContext.Usuarios.AsNoTracking().ToList();
         }
 
         public UsuarioModel FindById(int id)
         {
-            var usuario = _dataContext.Usuarios.FirstOrDefault(u => u.UsuarioId == id);
+            var usuario = _dataContext.Usuarios.AsNoTracking().FirstOrDefault(u => u.UsuarioId == id);
 
             return usuario;
         }
@@ -52,7 +53,7 @@ namespace Fiap.Api.Donation2.Repository
 
         public UsuarioModel FindByEmailAndSenha(string email, string senha)
         {
-            var usuario = _dataContext.Usuarios.FirstOrDefault(
+            var usuario = _dataContext.Usuarios.AsNoTracking().FirstOrDefault(
                     u => u.EmailUsuario == email &&
                          u.Senha == senha
                 );
