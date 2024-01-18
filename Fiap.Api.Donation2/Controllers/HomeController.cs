@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Fiap.Api.Donation2.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Fiap.Api.Donation2.Controllers
@@ -9,7 +10,7 @@ namespace Fiap.Api.Donation2.Controllers
     {
 
         [HttpGet]
-        public string Get()
+        public async Task<string> GetAsync()
         {
             return "GET";
         }

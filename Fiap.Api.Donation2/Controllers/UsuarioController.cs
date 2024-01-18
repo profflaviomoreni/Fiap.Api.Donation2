@@ -19,9 +19,9 @@ namespace Fiap.Api.Donation2.Controllers
 
 
         [HttpGet]
-        public ActionResult<IList<UsuarioModel>> Get()
+        public async Task<ActionResult<IList<UsuarioModel>>> GetAsync()
         {
-            var usuarios = _usuarioRepository.FindAll();
+            var usuarios = await _usuarioRepository.FindAll();
 
             if( usuarios != null && usuarios.Count > 0 )
             {
@@ -34,9 +34,9 @@ namespace Fiap.Api.Donation2.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public ActionResult<UsuarioModel> Get(int id)
+        public async Task<ActionResult<UsuarioModel>> GetAsync(int id)
         {
-            var usuario = _usuarioRepository.FindById(id);
+            var usuario = await _usuarioRepository.FindById(id);
 
             if (usuario != null)
             {
@@ -48,7 +48,7 @@ namespace Fiap.Api.Donation2.Controllers
         }
 
         [HttpPost]
-        public ActionResult<UsuarioModel> Post([FromBody] UsuarioModel usuarioModel)
+        public async Task<ActionResult<UsuarioModel>> Post([FromBody] UsuarioModel usuarioModel)
         {
                 
             if ( ! ModelState.IsValid )
@@ -56,7 +56,7 @@ namespace Fiap.Api.Donation2.Controllers
                 return BadRequest();
             }
 
-            _usuarioRepository.Insert(usuarioModel);
+            await _usuarioRepository.Insert(usuarioModel);
 
             var url = Request.GetEncodedUrl().EndsWith("/") ?
                         Request.GetEncodedUrl() : 
@@ -69,7 +69,7 @@ namespace Fiap.Api.Donation2.Controllers
         }
 
         [HttpPut("{id:int}")]
-        public ActionResult Put([FromRoute] int id, [FromBody] UsuarioModel usuarioModel)
+        public async Task<ActionResult> Put([FromRoute] int id, [FromBody] UsuarioModel usuarioModel)
         {
             if ( (!ModelState.IsValid) || (id != usuarioModel.UsuarioId) )
             {
@@ -82,7 +82,7 @@ namespace Fiap.Api.Donation2.Controllers
         }
 
         [HttpDelete("{id:int}")]
-        public ActionResult Delete([FromRoute] int id)
+        public async Task<ActionResult> Delete([FromRoute] int id)
         {
 
             if ( id == 0 )
@@ -103,12 +103,12 @@ namespace Fiap.Api.Donation2.Controllers
             
         }
 
-
+        
         [HttpPost]
         [Route("Login")]
-        public ActionResult<UsuarioModel> Login([FromBody] UsuarioModel usuarioModel)
+        public async Task<ActionResult<UsuarioModel>> Login([FromBody] UsuarioModel usuarioModel)
         {
-            var usuario = _usuarioRepository.FindByEmailAndSenha(
+            var usuario = await _usuarioRepository.FindByEmailAndSenha(
                 usuarioModel.EmailUsuario,
                 usuarioModel.Senha);
 
@@ -122,6 +122,7 @@ namespace Fiap.Api.Donation2.Controllers
             }
 
         }
+        
 
 
     }

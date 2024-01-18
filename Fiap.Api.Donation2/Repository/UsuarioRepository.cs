@@ -16,19 +16,19 @@ namespace Fiap.Api.Donation2.Repository
         }
 
 
-        public IList<UsuarioModel> FindAll()
+        public async Task<IList<UsuarioModel>> FindAll()
         {
-            return _dataContext.Usuarios.AsNoTracking().ToList();
+            var usuarios = await _dataContext.Usuarios.AsNoTracking().ToListAsync();
+            return usuarios;
         }
 
-        public UsuarioModel FindById(int id)
+        public async Task<UsuarioModel> FindById(int id)
         {
-            var usuario = _dataContext.Usuarios.AsNoTracking().FirstOrDefault(u => u.UsuarioId == id);
-
+            var usuario = await _dataContext.Usuarios.AsNoTracking().FirstOrDefaultAsync(u => u.UsuarioId == id);
             return usuario;
         }
 
-        public void Delete(int id)
+        public async void Delete(int id)
         {
             var usuario = new UsuarioModel();
             usuario.UsuarioId = id;
@@ -37,7 +37,7 @@ namespace Fiap.Api.Donation2.Repository
             _dataContext.SaveChanges();
         }
 
-        public int Insert(UsuarioModel usuarioModel)
+        public async Task<int> Insert(UsuarioModel usuarioModel)
         {
             _dataContext.Usuarios.Add(usuarioModel);
             _dataContext.SaveChanges();
@@ -45,15 +45,15 @@ namespace Fiap.Api.Donation2.Repository
             return usuarioModel.UsuarioId;
         }
 
-        public void Update(UsuarioModel usuarioModel)
+        public async void Update(UsuarioModel usuarioModel)
         {
             _dataContext.Usuarios.Update(usuarioModel);
             _dataContext.SaveChanges();
         }
 
-        public UsuarioModel FindByEmailAndSenha(string email, string senha)
+        public async Task<UsuarioModel> FindByEmailAndSenha(string email, string senha)
         {
-            var usuario = _dataContext.Usuarios.AsNoTracking().FirstOrDefault(
+            var usuario = await _dataContext.Usuarios.AsNoTracking().FirstOrDefaultAsync(
                     u => u.EmailUsuario == email &&
                          u.Senha == senha
                 );
