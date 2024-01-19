@@ -1,7 +1,11 @@
+using Fiap.Api.Donation2;
 using Fiap.Api.Donation2.Data;
 using Fiap.Api.Donation2.Repository;
 using Fiap.Api.Donation2.Repository.Interface;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +27,37 @@ builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 
+
+#region authentication
+
+var key = Encoding.UTF8.GetBytes(Settings.SECRET_TOKEN);
+
+builder.Services.AddAuthentication(
+    a => {
+        a.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        a.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    }).AddJwtBearer( 
+        opt =>
+        {
+            opt.RequireHttpsMetadata = false;
+            opt.SaveToken = true;
+            opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+            {
+                ValidateIssuerSigningKey = true,
+                ValidateIssuer = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                //LifetimeValidator = ...
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                RequireExpirationTime = true
+            };
+        }
+    );
+
+#endregion
+
+
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -37,6 +72,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

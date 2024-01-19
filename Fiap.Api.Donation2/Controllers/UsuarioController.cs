@@ -1,5 +1,6 @@
 ﻿using Fiap.Api.Donation2.Models;
 using Fiap.Api.Donation2.Repository.Interface;
+using Fiap.Api.Donation2.Services;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 
@@ -114,8 +115,17 @@ namespace Fiap.Api.Donation2.Controllers
 
             if ( usuario != null)
             {
+                // GERANDO TOKEN DE ACESSO
+                var token = AuthenticationService.GetToken(usuario);
+
+                var usuarioRetorno = new
+                {
+                    usuario = usuario,
+                    token = token
+                };
+
                 usuario.Senha = string.Empty;
-                return Ok(usuario);
+                return Ok(usuarioRetorno);
             } else
             {
                 return NotFound();
