@@ -28,8 +28,7 @@ builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 
 
-#region authentication
-
+#region autenticacao
 bool CustomLifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken tokenToValidate, TokenValidationParameters @param)
 {
     if (expires != null)
@@ -39,30 +38,27 @@ bool CustomLifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityTok
     return false;
 }
 
+var key = Encoding.ASCII.GetBytes(Settings.SECRET_TOKEN);
 
-var key = Encoding.UTF8.GetBytes(Settings.SECRET_TOKEN);
-
-builder.Services.AddAuthentication(
-    a => {
-        a.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-        a.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    }).AddJwtBearer( 
-        opt =>
+builder.Services.AddAuthentication(a => {
+    a.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    a.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}
+    ).AddJwtBearer(options => {
+        options.RequireHttpsMetadata = false;
+        options.SaveToken = true;
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            opt.RequireHttpsMetadata = false;
-            opt.SaveToken = true;
-            opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
-            {
-                ValidateIssuerSigningKey = true,
-                ValidateIssuer = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
-                LifetimeValidator = CustomLifetimeValidator,
-                ValidateAudience = false,
-                ValidateLifetime = true,
-                RequireExpirationTime = true
-            };
-        }
-    );
+            ValidateIssuerSigningKey = true,
+            ValidateIssuer = false,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+            LifetimeValidator = CustomLifetimeValidator, // forma de validar se o token está expirado
+            ValidateAudience = false,
+            ValidateLifetime = true,
+            RequireExpirationTime = true
+        };
+    });
+
 
 #endregion
 
