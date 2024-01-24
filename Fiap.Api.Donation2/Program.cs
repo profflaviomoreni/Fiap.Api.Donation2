@@ -30,6 +30,16 @@ builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
 
 #region authentication
 
+bool CustomLifetimeValidator(DateTime? notBefore, DateTime? expires, SecurityToken tokenToValidate, TokenValidationParameters @param)
+{
+    if (expires != null)
+    {
+        return expires > DateTime.UtcNow;
+    }
+    return false;
+}
+
+
 var key = Encoding.UTF8.GetBytes(Settings.SECRET_TOKEN);
 
 builder.Services.AddAuthentication(
@@ -46,7 +56,7 @@ builder.Services.AddAuthentication(
                 ValidateIssuerSigningKey = true,
                 ValidateIssuer = true,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
-                //LifetimeValidator = ...
+                LifetimeValidator = CustomLifetimeValidator,
                 ValidateAudience = false,
                 ValidateLifetime = true,
                 RequireExpirationTime = true

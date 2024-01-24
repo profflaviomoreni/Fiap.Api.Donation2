@@ -1,6 +1,8 @@
 ﻿using Fiap.Api.Donation2.Models;
+using Fiap.Api.Donation2.Repository;
 using Fiap.Api.Donation2.Repository.Interface;
 using Fiap.Api.Donation2.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 

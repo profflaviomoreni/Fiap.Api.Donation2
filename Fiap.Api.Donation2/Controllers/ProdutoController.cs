@@ -16,9 +16,12 @@ namespace Fiap.Api.Donation2.Controllers
             produtoRepository = _produtoRepository;
         }
 
-        // GET: api/Produto
+        
+
         [HttpGet]
-        public ActionResult<IList<ProdutoModel>> GetProdutos()
+        public ActionResult<IList<dynamic>> GetProdutos( 
+            [FromQuery] int pagina = 0, 
+            [FromQuery] int tamanho = 5)
         {
             var produtos =  produtoRepository.FindAll();
             if (produtos == null || produtos.Count == 0)
@@ -26,8 +29,33 @@ namespace Fiap.Api.Donation2.Controllers
                 return NoContent();
             }
 
-            return Ok(produtos);
+            var retorno = new
+            {
+                produtos = produtos,
+                totalPaginas = 0,
+                totalGeral = 0,
+                linkProxima = "proximo",
+                linkAnterior = "anterior",
+                pagina = pagina,
+                tamanho = tamanho
+            };
+
+            return Ok(retorno);
         }
+
+
+        //[HttpGet]
+        //public ActionResult<IList<ProdutoModel>> GetProdutos()
+        //{
+        //    var produtos = produtoRepository.FindAll();
+        //    if (produtos == null || produtos.Count == 0)
+        //    {
+        //        return NoContent();
+        //    }
+
+        //    return Ok(produtos);
+        //}
+
 
         [HttpGet("{id}")]
         public ActionResult<ProdutoModel> GetProdutoModel(int id)

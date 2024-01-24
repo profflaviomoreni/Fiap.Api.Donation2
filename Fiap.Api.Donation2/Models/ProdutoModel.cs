@@ -44,5 +44,24 @@ namespace Fiap.Api.Donation2.Models
         [ForeignKey(nameof(CategoriaId))]
         public CategoriaModel Categoria { get; set; }
 
+
+        public ProdutoModel()
+        {
+                
+        }
+
+        public ProdutoModel(int produtoId, string nome, bool disponivel, string descricao, string sugestaoTroca, double valor, int usuarioId, int categoriaId)
+        {
+            ProdutoId = produtoId;
+            Nome = nome;
+            Disponivel = disponivel;
+            Descricao = descricao;
+            SugestaoTroca = sugestaoTroca;
+            Valor = valor;
+            DataCadastro = DateTime.Now;
+            DataExpiracao = DateTime.Now.AddMonths(20);
+            UsuarioId = usuarioId;
+            CategoriaId = categoriaId;
+        }
     }
 }
