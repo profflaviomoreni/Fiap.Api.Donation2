@@ -109,6 +109,7 @@ namespace Fiap.Api.Donation2.Controllers
         
         [HttpPost]
         [Route("Login")]
+        
         public async Task<ActionResult<UsuarioModel>> Login([FromBody] UsuarioModel usuarioModel)
         {
             var usuario = await _usuarioRepository.FindByEmailAndSenha(

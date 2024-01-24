@@ -50,7 +50,8 @@ builder.Services.AddAuthentication(a => {
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuerSigningKey = true,
-            ValidateIssuer = false,
+            ValidateIssuer = true,
+            ValidIssuer = "fiap",
             IssuerSigningKey = new SymmetricSecurityKey(key),
             LifetimeValidator = CustomLifetimeValidator, // forma de validar se o token está expirado
             ValidateAudience = false,
