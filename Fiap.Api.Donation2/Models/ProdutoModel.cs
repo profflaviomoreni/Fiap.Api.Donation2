@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using Fiap.Api.Donation2.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Fiap.Api.Donation2.Models
 {
     [Table("Produto")]
+    [Index(nameof(DataCadastro), IsUnique = false)]
     public class ProdutoModel
     {
 

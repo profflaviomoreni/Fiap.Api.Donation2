@@ -20,10 +20,17 @@ namespace Fiap.Api.Donation2.Controllers
 
         [HttpGet]
         public ActionResult<IList<dynamic>> GetProdutos( 
-            [FromQuery] int pagina = 0, 
+            [FromQuery] string dataReferencia, 
             [FromQuery] int tamanho = 5)
         {
-            var produtos =  produtoRepository.FindAll();
+
+            var data = ( string.IsNullOrEmpty(dataReferencia) ) ? DateTime.UtcNow.AddYears(-200) : DateTime.ParseExact(dataReferencia, "yyyy-MM-ddTHH:mm:ss.fffffff", null, System.Globalization.DateTimeStyles.RoundtripKind);
+
+            var produtos =  produtoRepository.FindAll(data, tamanho);
+            var novaDataReferencia = produtos.LastOrDefault().DataCadastro.ToString("yyyy-MM-ddTHH:mm:ss.ffffffF");
+
+            var linkProximo = $"/api/produto?dataReferencia={novaDataReferencia}&tamanho={tamanho}";
+
             if (produtos == null || produtos.Count == 0)
             {
                 return NoContent();
@@ -31,18 +38,48 @@ namespace Fiap.Api.Donation2.Controllers
 
             var retorno = new
             {
-                produtos = produtos,
-                totalPaginas = 0,
-                totalGeral = 0,
-                linkProxima = "proximo",
-                linkAnterior = "anterior",
-                pagina = pagina,
-                tamanho = tamanho
+                produtos,
+                linkProximo
             };
 
             return Ok(retorno);
         }
 
+
+        //[HttpGet]
+        //public ActionResult<IList<dynamic>> GetProdutos(
+        //    [FromQuery] int pagina = 0,
+        //    [FromQuery] int tamanho = 5)
+        //{
+
+        //    var totalGeral = produtoRepository.Count();
+        //    var totalPaginas = Convert.ToInt16(Math.Ceiling((double)totalGeral / tamanho));
+        //    var linkProxima = (pagina < totalPaginas - 1) ? $"/api/produto?pagina={pagina + 1}&tamanho={tamanho}" : "";
+        //    var linkAnterior = (pagina > 0) ? $"/api/produto?pagina={pagina - 1}&tamanho={tamanho}" : "";
+
+
+        //    if (pagina > totalPaginas)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var produtos = produtoRepository.FindAll(pagina, tamanho);
+        //    if (produtos == null || produtos.Count == 0)
+        //    {
+        //        return NoContent();
+        //    }
+
+        //    var retorno = new
+        //    {
+        //        produtos,
+        //        totalPaginas,
+        //        totalGeral,
+        //        linkProxima,
+        //        linkAnterior
+        //    };
+
+        //    return Ok(retorno);
+        //}
 
         //[HttpGet]
         //public ActionResult<IList<ProdutoModel>> GetProdutos()

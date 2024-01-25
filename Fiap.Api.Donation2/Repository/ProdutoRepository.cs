@@ -1,4 +1,5 @@
 ﻿using Fiap.Api.Donation2.Data;
+using Fiap.Api.Donation2.Migrations;
 using Fiap.Api.Donation2.Models;
 using Fiap.Api.Donation2.Repository.Interface;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +20,39 @@ namespace Fiap.Api.Donation2.Repository
             var produtos = dataContext.Produtos.AsNoTracking().ToList();
 
             return produtos == null ? new List<ProdutoModel>() : produtos;
+        }
+
+
+
+        public IList<ProdutoModel> FindAll(int pagina = 0, int tamanho = 5)
+        {
+            var produtos = dataContext.Produtos
+                                .OrderBy(p => p.ProdutoId)
+                                .Skip(tamanho * pagina) 
+                                .Take(tamanho)
+                                .AsNoTracking()
+                                .ToList();
+
+            return produtos == null ? new List<ProdutoModel>() : produtos;
+        }
+
+
+        public IList<ProdutoModel> FindAll(DateTime? dataReferencia, int tamanho = 5)
+        {
+            var produtos = dataContext.Produtos
+                                .Where ( p => p.DataCadastro > dataReferencia)
+                                .OrderBy(p => p.DataCadastro)
+                                .Take(tamanho)
+                                .AsNoTracking()
+                                .ToList();
+
+            return produtos == null ? new List<ProdutoModel>() : produtos;
+        }
+
+
+        public int Count()
+        {
+            return dataContext.Produtos.Count();
         }
 
 

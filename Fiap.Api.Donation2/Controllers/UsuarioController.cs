@@ -1,7 +1,9 @@
-﻿using Fiap.Api.Donation2.Models;
+﻿using AutoMapper;
+using Fiap.Api.Donation2.Models;
 using Fiap.Api.Donation2.Repository;
 using Fiap.Api.Donation2.Repository.Interface;
 using Fiap.Api.Donation2.Services;
+using Fiap.Api.Donation2.ViewModel;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -15,20 +17,24 @@ namespace Fiap.Api.Donation2.Controllers
 
         private readonly IUsuarioRepository _usuarioRepository;
 
-        public UsuarioController(IUsuarioRepository usuarioRepository)
+        private readonly IMapper _mapper;
+
+        public UsuarioController(IUsuarioRepository usuarioRepository, IMapper mapper)
         {
             _usuarioRepository = usuarioRepository;
+            _mapper = mapper;
         }
 
 
         [HttpGet]
-        public async Task<ActionResult<IList<UsuarioModel>>> GetAsync()
+        public async Task<ActionResult<IList<UsuarioResponseVM>>> GetAsync()
         {
             var usuarios = await _usuarioRepository.FindAll();
 
             if( usuarios != null && usuarios.Count > 0 )
             {
-                return Ok(usuarios);
+                var resposta = _mapper.Map<List<UsuarioResponseVM>>(usuarios);
+                return Ok(resposta);
             } else
             {
                 return NoContent();
@@ -37,12 +43,13 @@ namespace Fiap.Api.Donation2.Controllers
         }
 
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<UsuarioModel>> GetAsync(int id)
+        public async Task<ActionResult<UsuarioResponseVM>> GetAsync(int id)
         {
             var usuario = await _usuarioRepository.FindById(id);
 
             if (usuario != null)
             {
+                var resposta = _mapper.Map<UsuarioResponseVM>(usuario);
                 return Ok(usuario);
             } else
             {
@@ -110,29 +117,27 @@ namespace Fiap.Api.Donation2.Controllers
         [HttpPost]
         [Route("Login")]
         
-        public async Task<ActionResult<UsuarioModel>> Login([FromBody] UsuarioModel usuarioModel)
+        public async Task<ActionResult<LoginResponseVM>> Login([FromBody] LoginRequestVM loginRequestVM)
         {
+
             var usuario = await _usuarioRepository.FindByEmailAndSenha(
-                usuarioModel.EmailUsuario,
-                usuarioModel.Senha);
+                loginRequestVM.EmailUsuario,
+                loginRequestVM.Senha);
 
             if ( usuario != null)
             {
                 // GERANDO TOKEN DE ACESSO
                 var token = AuthenticationService.GetToken(usuario);
 
-                var usuarioRetorno = new
-                {
-                    usuario = usuario,
-                    token = token
-                };
+                var loginResponseVM = _mapper.Map<LoginResponseVM>(usuario);
+                loginResponseVM.Token = token;
 
-                usuario.Senha = string.Empty;
-                return Ok(usuarioRetorno);
+                return Ok(loginResponseVM);
             } else
             {
                 return NotFound();
             }
+            
 
         }
         
