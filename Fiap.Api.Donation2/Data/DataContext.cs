@@ -9,6 +9,7 @@ namespace Fiap.Api.Donation2.Data
         public DbSet<UsuarioModel> Usuarios { get; set; }
         public DbSet<CategoriaModel> Categorias { get; set; }
         public DbSet<ProdutoModel> Produtos { get; set; }
+        public DbSet<TrocaModel> Trocas { get; set; }
 
         public DataContext(DbContextOptions options) : base(options)
         {

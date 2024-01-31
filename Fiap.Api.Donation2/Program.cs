@@ -6,9 +6,15 @@ using Fiap.Api.Donation2.Repository;
 using Fiap.Api.Donation2.Repository.Interface;
 using Fiap.Api.Donation2.ViewModel;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Extensions.Options;
+using Swashbuckle.AspNetCore.SwaggerGen;
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,7 +35,7 @@ builder.Services.AddDbContext<DataContext>(
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
 builder.Services.AddScoped<ICategoriaRepository, CategoriaRepository>();
 builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
-
+builder.Services.AddScoped<ITrocaRepository, TrocaRepository>();
 
 #region Mapper
 var mapperConfig = new AutoMapper.MapperConfiguration(c => { 
@@ -43,6 +49,15 @@ var mapperConfig = new AutoMapper.MapperConfiguration(c => {
     c.CreateMap<UsuarioModel, LoginResponseVM>();
 
     c.CreateMap<UsuarioModel, UsuarioResponseVM>();
+    
+    c.CreateMap<UsuarioModel, UsuarioRequestVM>();
+    c.CreateMap<UsuarioRequestVM, UsuarioModel>();
+    c.CreateMap<UsuarioRequestVM, UsuarioResponseVM>();
+
+    c.CreateMap<TrocaRequestVM, TrocaModel>();
+
+    c.CreateMap<TrocaModel, TrocaResponseVM>();
+    c.CreateMap<ProdutoModel, ProdutoResponseVM>();
 
 });
 
@@ -86,6 +101,28 @@ builder.Services.AddAuthentication(a => {
 
 #endregion
 
+#region versionamento
+builder.Services.AddApiVersioning(options =>
+{
+    options.UseApiBehavior = false;
+    options.ReportApiVersions = true;
+    options.AssumeDefaultVersionWhenUnspecified = true;
+    options.DefaultApiVersion = new ApiVersion(3, 0);
+    options.ApiVersionReader =
+        ApiVersionReader.Combine(
+            new HeaderApiVersionReader("x-api-version"),
+            new QueryStringApiVersionReader(),
+            new UrlSegmentApiVersionReader());
+});
+
+builder.Services.AddVersionedApiExplorer(setup => {
+    setup.GroupNameFormat = "'v'VVV";
+    setup.SubstituteApiVersionInUrl = true;
+});
+
+builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
+#endregion
+
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -94,12 +131,30 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseApiVersioning();
+
+// Ajustando versionamento no Swagger
+var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+
+    // Ajustando versionamento no Swagger
+    app.UseSwaggerUI(c =>
+    {
+        foreach (var d in provider.ApiVersionDescriptions)
+        {
+            c.SwaggerEndpoint(
+                $"/swagger/{d.GroupName}/swagger.json",
+                d.GroupName.ToUpperInvariant());
+        }
+
+        c.DocExpansion(DocExpansion.List);
+    });
 }
+
 
 app.UseHttpsRedirection();
 

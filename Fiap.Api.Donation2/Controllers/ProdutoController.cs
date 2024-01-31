@@ -5,7 +5,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Fiap.Api.Donation2.Controllers
 {
-    [Route("api/[controller]")]
+    [ApiVersion("1.0", Deprecated = true)]
+    [ApiVersion("2.0")]
+    [ApiVersion("3.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class ProdutoController : ControllerBase
     {
@@ -19,6 +22,7 @@ namespace Fiap.Api.Donation2.Controllers
         
 
         [HttpGet]
+        [ApiVersion("3.0")]
         public ActionResult<IList<dynamic>> GetProdutos( 
             [FromQuery] string dataReferencia, 
             [FromQuery] int tamanho = 5)
@@ -46,52 +50,57 @@ namespace Fiap.Api.Donation2.Controllers
         }
 
 
-        //[HttpGet]
-        //public ActionResult<IList<dynamic>> GetProdutos(
-        //    [FromQuery] int pagina = 0,
-        //    [FromQuery] int tamanho = 5)
-        //{
+        [HttpGet]
+        [ApiVersion("2.0", Deprecated = true)]
+        public ActionResult<IList<dynamic>> GetProdutos(
+            [FromQuery] int pagina = 0,
+            [FromQuery] int tamanho = 5)
+        {
 
-        //    var totalGeral = produtoRepository.Count();
-        //    var totalPaginas = Convert.ToInt16(Math.Ceiling((double)totalGeral / tamanho));
-        //    var linkProxima = (pagina < totalPaginas - 1) ? $"/api/produto?pagina={pagina + 1}&tamanho={tamanho}" : "";
-        //    var linkAnterior = (pagina > 0) ? $"/api/produto?pagina={pagina - 1}&tamanho={tamanho}" : "";
+            var totalGeral = produtoRepository.Count();
+            var totalPaginas = Convert.ToInt16(Math.Ceiling((double)totalGeral / tamanho));
+            var linkProxima = (pagina < totalPaginas - 1) ? $"/api/produto?pagina={pagina + 1}&tamanho={tamanho}" : "";
+            var linkAnterior = (pagina > 0) ? $"/api/produto?pagina={pagina - 1}&tamanho={tamanho}" : "";
 
 
-        //    if (pagina > totalPaginas)
-        //    {
-        //        return NotFound();
-        //    }
+            if (pagina > totalPaginas)
+            {
+                return NotFound();
+            }
 
-        //    var produtos = produtoRepository.FindAll(pagina, tamanho);
-        //    if (produtos == null || produtos.Count == 0)
-        //    {
-        //        return NoContent();
-        //    }
+            var produtos = produtoRepository.FindAll(pagina, tamanho);
+            if (produtos == null || produtos.Count == 0)
+            {
+                return NoContent();
+            }
 
-        //    var retorno = new
-        //    {
-        //        produtos,
-        //        totalPaginas,
-        //        totalGeral,
-        //        linkProxima,
-        //        linkAnterior
-        //    };
+            var retorno = new
+            {
+                produtos,
+                totalPaginas,
+                totalGeral,
+                linkProxima,
+                linkAnterior
+            };
 
-        //    return Ok(retorno);
-        //}
+            return Ok(retorno);
+        }
 
-        //[HttpGet]
-        //public ActionResult<IList<ProdutoModel>> GetProdutos()
-        //{
-        //    var produtos = produtoRepository.FindAll();
-        //    if (produtos == null || produtos.Count == 0)
-        //    {
-        //        return NoContent();
-        //    }
 
-        //    return Ok(produtos);
-        //}
+        [HttpGet]
+        [ApiVersion("1.0", Deprecated = true)]
+        public ActionResult<IList<ProdutoModel>> GetProdutos()
+        {
+            var produtos = produtoRepository.FindAll();
+            if (produtos == null || produtos.Count == 0)
+            {
+                return NoContent();
+            }
+
+            return Ok(produtos);
+        }
+
+
 
 
         [HttpGet("{id}")]

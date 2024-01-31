@@ -50,7 +50,7 @@ namespace Fiap.Api.Donation2.Controllers
             if (usuario != null)
             {
                 var resposta = _mapper.Map<UsuarioResponseVM>(usuario);
-                return Ok(usuario);
+                return Ok(resposta);
             } else
             {
                 return NotFound();
@@ -58,7 +58,7 @@ namespace Fiap.Api.Donation2.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<UsuarioModel>> Post([FromBody] UsuarioModel usuarioModel)
+        public async Task<ActionResult<UsuarioResponseVM>> Post([FromBody] UsuarioRequestVM usuarioRequestVM)
         {
                 
             if ( ! ModelState.IsValid )
@@ -66,6 +66,7 @@ namespace Fiap.Api.Donation2.Controllers
                 return BadRequest();
             }
 
+            var usuarioModel = _mapper.Map<UsuarioModel>(usuarioRequestVM);
             await _usuarioRepository.Insert(usuarioModel);
 
             var url = Request.GetEncodedUrl().EndsWith("/") ?
@@ -73,19 +74,21 @@ namespace Fiap.Api.Donation2.Controllers
                         Request.GetEncodedUrl() + "/";
 
             url = url + usuarioModel.UsuarioId;
-           
 
-            return Created(url, usuarioModel);
+            var usuarioResponseVM = _mapper.Map<UsuarioResponseVM>(usuarioModel);
+
+            return Created(url, usuarioResponseVM);
         }
 
         [HttpPut("{id:int}")]
-        public async Task<ActionResult> Put([FromRoute] int id, [FromBody] UsuarioModel usuarioModel)
+        public async Task<ActionResult> Put([FromRoute] int id, [FromBody] UsuarioRequestVM usuarioRequestVM)
         {
-            if ( (!ModelState.IsValid) || (id != usuarioModel.UsuarioId) )
+            if ( (!ModelState.IsValid) || (id != usuarioRequestVM.UsuarioId) )
             {
                 return BadRequest();
             } else 
             {
+                var usuarioModel = _mapper.Map<UsuarioModel>(usuarioRequestVM);
                 _usuarioRepository.Update(usuarioModel);
                 return NoContent();
             }

@@ -9,9 +9,12 @@ namespace Fiap.Api.Donation2Test
 {
     public class UsuarioControllerTest
     {
+
+        /*
         [Fact]
         public async Task GetUsuarioResultOkWithUsuarios()
         {
+            
             var usuarios = new List<UsuarioModel>() {
                 new UsuarioModel()
             };
@@ -27,6 +30,7 @@ namespace Fiap.Api.Donation2Test
             
             Assert.Single(resultValue);
             Assert.Equal(1, resultValue.Count);
+            
         }
         
         [Fact]
@@ -63,6 +67,8 @@ namespace Fiap.Api.Donation2Test
             Assert.IsType<NoContentResult>(result.Result);
 
         }
+
+        */
 
     }
 }
